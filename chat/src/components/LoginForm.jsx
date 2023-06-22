@@ -26,29 +26,41 @@ const LoginForm = ({ notify }) => {
 
   const formik = useFormik({
     initialValues: {
-      username: '',
-      password: '',
+      idInstance: '',
+      apiTokenInstance: '',
     },
-    onSubmit: async (values) => {
+    onSubmit: async ({ idInstance, apiTokenInstance }) => {
       setAuthFailed(false);
 
       try {
-        const res = await axios.post(routes.loginPath(), values);
+        const res = await axios.get([
+          `${routes.basePath()}${idInstance}`,
+          'getStateInstance',
+          `${apiTokenInstance}`,
+        ].join('/'));
         if (res.status === 200) {
-          logIn(res.data);
-          const { from } = { from: { pathname: '/' } };
-          navigate(from);
+          const userStatus = res.data.stateInstance;
+          if (userStatus === 'authorized') {
+            logIn({ idInstance, apiTokenInstance });
+            const { from } = { from: { pathname: '/' } };
+            navigate(from);
+          } else {
+            formik.setSubmitting(false);
+            setAuthFailed(true);
+            inputEl.current.select();
+            notify('notAuthorized');
+          }
         }
       } catch (err) {
         formik.setSubmitting(false);
-        if (err.isAxiosError && err.response.status === 401) {
+        if (err.isAxiosError) {
           setAuthFailed(true);
           inputEl.current.select();
-          return;
+        } else {
+          notify('error');
+          console.log(err);
+          throw Error('NetworkError');
         }
-        notify('error');
-        console.log(err);
-        throw Error('NetworkError');
       }
     },
     validateOnChange: false,
@@ -69,46 +81,35 @@ const LoginForm = ({ notify }) => {
                   <Form.Group className="form-floating mb-3">
                     <Form.Control
                       onChange={formik.handleChange}
-                      value={formik.values.username}
-                      placeholder="username"
-                      name="username"
-                      id="username"
-                      autoComplete="username"
+                      value={formik.values.idInstance}
+                      placeholder="idInstance"
+                      name="idInstance"
+                      id="idInstance"
+                      autoComplete="idInstance"
                       isInvalid={authFailed}
                       required
                       ref={inputEl}
                     />
-                    <Form.Label htmlFor="username">{t('Nickname')}</Form.Label>
+                    <Form.Label htmlFor="idInstance">{t('idInstance')}</Form.Label>
                   </Form.Group>
                   <Form.Group className="form-floating mb-4">
                     <Form.Control
-                      type="password"
+                      type="text"
                       onChange={formik.handleChange}
-                      value={formik.values.password}
-                      placeholder="password"
-                      name="password"
-                      id="password"
-                      autoComplete="current-password"
+                      value={formik.values.apiTokenInstance}
+                      placeholder="apiTokenInstance"
+                      name="apiTokenInstance"
+                      id="apiTokenInstance"
+                      autoComplete="apiTokenInstance"
                       isInvalid={authFailed}
                       required
                     />
-                    <Form.Label htmlFor="password">{t('Password')}</Form.Label>
+                    <Form.Label htmlFor="apiTokenInstance">{t('apiTokenInstance')}</Form.Label>
                     <Form.Control.Feedback type="invalid">{t('errors.LoginError')}</Form.Control.Feedback>
                   </Form.Group>
                   <Button type="submit" variant="outline-primary" className="w-100">{t('Enter')}</Button>
                 </fieldset>
               </Form>
-            </div>
-            <div className="card-footer p-4">
-              <div className="text-center">
-                <span>
-                  {t('AskForAccount')}
-                </span>
-                  &nbsp;
-                <a href="/signup">
-                  {t('Registration')}
-                </a>
-              </div>
             </div>
           </div>
         </div>

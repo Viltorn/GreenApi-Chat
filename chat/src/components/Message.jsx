@@ -1,15 +1,22 @@
 import React from 'react';
-import { useTranslation } from 'react-i18next';
+import cn from 'classnames';
 
 const Message = ({ message }) => {
-  const { t } = useTranslation();
-  const { body, username, id } = message;
+  const {
+    body,
+    sender,
+    idMessage,
+    status,
+  } = message;
+  const classes = cn({
+    'text-success': status === 'user',
+  });
 
   return (
-    <div key={id} className="text-break mb-2">
-      <b>{username}</b>
+    <div key={idMessage} className="text-break mb-2">
+      <b className={classes}>{sender}</b>
       :&nbsp;
-      {t(`${body}`)}
+      {body}
     </div>
   );
 };

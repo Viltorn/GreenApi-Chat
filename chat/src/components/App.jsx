@@ -15,9 +15,9 @@ import {
 // import routes from '../routes';
 import LoginForm from './LoginForm.jsx';
 import ErrorPage from './error-page.jsx';
-import Chat from './Chat.jsx';
 import Header from './Header.jsx';
 import authContext from '../contexts/authContext.js';
+import MainWindow from './MainWindow.jsx';
 
 const PrivateRoute = ({ children }) => {
   const { isLogged } = useContext(authContext);
@@ -36,7 +36,7 @@ const App = ({ notify }) => (
         path="/"
         element={(
           <PrivateRoute>
-            <Chat notify={notify} />
+            <MainWindow notify={notify} />
           </PrivateRoute>
             )}
       />

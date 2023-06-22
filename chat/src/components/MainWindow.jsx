@@ -17,7 +17,6 @@ const MainWindow = ({ notify }) => {
   const { isOpened, type } = useSelector((state) => state.modalsReducer);
   // const { logOut } = useContext(authContext);
   const { idInstance, apiTokenInstance } = getAuthToken();
-
   const renderModal = (status, option) => {
     if (!status) {
       return null;
@@ -42,7 +41,8 @@ const MainWindow = ({ notify }) => {
           'getContacts',
           `${apiTokenInstance}`,
         ].join('/'));
-        const data = response.body;
+        const { data } = response;
+        console.log(response.data);
         dispatch(chatsActions.addChats(data));
       } catch (err) {
         showNetworkError();
@@ -50,81 +50,81 @@ const MainWindow = ({ notify }) => {
       }
     };
     getData();
-  });
+  }, [apiTokenInstance, idInstance, showNetworkError, dispatch]);
 
-  useEffect(() => {
-    // const getNotification = () => {
-    //   const response = axios.get(routes.recieveNotPath())
-    //     .then((res) => {
-    //       const webhookBody = res.body;
-    //       if (webhookBody) {
-    //         const webhookId = response.receiptId;
-    //         const { typeWebhook } = webhookBody;
-    //         if (typeWebhook === 'stateInstanceChanged') {
-    //           if (webhookBody.stateInstance === 'notauthorized') {
-    //             logOut();
-    //             showAuthError();
-    //           }
-    //         } else if (typeWebhook === 'incomingMessageReceived') {
-    //           dispatch(findDispatchRoute(typeWebhook));
-    //         }
-    //         return webhookId;
-    //       }
-    //     })
-    //     .then((res) => axios.delete(routes.deletNotPath(res)))
-    //     .finally(() => setTimeout(() => getNotification(), 3000));
-    // };
-    // const getNotification = async () => {
-    //   try {
-    //   // Method waits for 20 sec and returns empty string if there were no sent messages
-    //     console.log('Waiting incoming notifications...');
-    //     const response = await axios.get([
-    //       `${routes.basePath()}${idInstance}`,
-    //       'receiveNotification',
-    //       `${apiTokenInstance}`,
-    //     ].join('/'));
-    //     const webhookBody = response.body;
-    //     if (webhookBody) {
-    //       const webhookId = response.receiptId;
-    //       const { typeWebhook } = webhookBody;
-    //       if (typeWebhook === 'stateInstanceChanged') {
-    //         if (webhookBody.stateInstance === 'notauthorized') {
-    //           const deleteNotification = await axios.delete(routes.deletNotPath(webhookId));
-    //           if (deleteNotification.status === 'ok') {
-    //             logOut();
-    //             showAuthError();
-    //           }
-    //         } else {
-    //           await axios.delete(routes.deletNotPath(webhookId));
-    //         }
-    //       } else if (typeWebhook === 'incomingMessageReceived') {
-    //         const { senderName } = webhookBody.senderData;
-    //         const { idMessage } = webhookBody;
-    //         const { chatId } = webhookBody.senderData;
-    //         const sender = senderName !== '' ? senderName : chatId;
-    //         const body = webhookBody.messageData.textMessageData.textMessage;
-    //         dispatch(messagesActions.addMessage({
-    //           idMessage,
-    //           body,
-    //           chatId,
-    //           sender,
-    //           status: '',
-    //         }));
-    //         const deleteNotification = await axios.delete(routes.deletNotPath(webhookId));
-    //         if (deleteNotification.status === 'ok') {
-    //           setTimeout(() => getNotification(), 3000);
-    //         }
-    //       }
-    //     } else {
-    //       setTimeout(() => getNotification(), 3000);
-    //     }
-    //   } catch (e) {
-    //     showNetworkError();
-    //     console.log(e);
-    //   }
-    // };
-    // getNotification();
-  });
+  // useEffect(() => {
+  //   // const getNotification = () => {
+  //   //   const response = axios.get(routes.recieveNotPath())
+  //   //     .then((res) => {
+  //   //       const webhookBody = res.body;
+  //   //       if (webhookBody) {
+  //   //         const webhookId = response.receiptId;
+  //   //         const { typeWebhook } = webhookBody;
+  //   //         if (typeWebhook === 'stateInstanceChanged') {
+  //   //           if (webhookBody.stateInstance === 'notauthorized') {
+  //   //             logOut();
+  //   //             showAuthError();
+  //   //           }
+  //   //         } else if (typeWebhook === 'incomingMessageReceived') {
+  //   //           dispatch(findDispatchRoute(typeWebhook));
+  //   //         }
+  //   //         return webhookId;
+  //   //       }
+  //   //     })
+  //   //     .then((res) => axios.delete(routes.deletNotPath(res)))
+  //   //     .finally(() => setTimeout(() => getNotification(), 3000));
+  //   // };
+  //   // const getNotification = async () => {
+  //   //   try {
+  //   //   // Method waits for 20 sec and returns empty string if there were no sent messages
+  //   //     console.log('Waiting incoming notifications...');
+  //   //     const response = await axios.get([
+  //   //       `${routes.basePath()}${idInstance}`,
+  //   //       'receiveNotification',
+  //   //       `${apiTokenInstance}`,
+  //   //     ].join('/'));
+  //   //     const webhookBody = response.body;
+  //   //     if (webhookBody) {
+  //   //       const webhookId = response.receiptId;
+  //   //       const { typeWebhook } = webhookBody;
+  //   //       if (typeWebhook === 'stateInstanceChanged') {
+  //   //         if (webhookBody.stateInstance === 'notauthorized') {
+  //   //           const deleteNotification = await axios.delete(routes.deletNotPath(webhookId));
+  //   //           if (deleteNotification.status === 'ok') {
+  //   //             logOut();
+  //   //             showAuthError();
+  //   //           }
+  //   //         } else {
+  //   //           await axios.delete(routes.deletNotPath(webhookId));
+  //   //         }
+  //   //       } else if (typeWebhook === 'incomingMessageReceived') {
+  //   //         const { senderName } = webhookBody.senderData;
+  //   //         const { idMessage } = webhookBody;
+  //   //         const { chatId } = webhookBody.senderData;
+  //   //         const sender = senderName !== '' ? senderName : chatId;
+  //   //         const body = webhookBody.messageData.textMessageData.textMessage;
+  //   //         dispatch(messagesActions.addMessage({
+  //   //           idMessage,
+  //   //           body,
+  //   //           chatId,
+  //   //           sender,
+  //   //           status: '',
+  //   //         }));
+  //   //         const deleteNotification = await axios.delete(routes.deletNotPath(webhookId));
+  //   //         if (deleteNotification.status === 'ok') {
+  //   //           setTimeout(() => getNotification(), 3000);
+  //   //         }
+  //   //       }
+  //   //     } else {
+  //   //       setTimeout(() => getNotification(), 3000);
+  //   //     }
+  //   //   } catch (e) {
+  //   //     showNetworkError();
+  //   //     console.log(e);
+  //   //   }
+  //   // };
+  //   // getNotification();
+  // });
 
   return (
     <>

@@ -1,5 +1,6 @@
 export default {
   translation: {
+    ChooseChat: 'Пожалуйста, выберите контакт',
     User: 'Вы',
     Exit: 'Выйти',
     Enter: 'Войти',
@@ -7,7 +8,7 @@ export default {
     Password: 'Пароль',
     AskForAccount: 'Нет аккаунта?',
     Registration: 'Регистрация',
-    Channels: 'Каналы',
+    Chats: 'Контакты',
     EnterMessage: 'Введите сообщение...',
     Send: 'Отправить',
     Delete: 'Удалить',

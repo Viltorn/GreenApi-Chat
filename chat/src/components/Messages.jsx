@@ -1,45 +1,63 @@
 import React, { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { useFormik } from 'formik';
 import { Form } from 'react-bootstrap';
+import axios from 'axios';
 import Message from './Message.jsx';
+import { actions as messagesActions } from '../slices/messagesSlice.js';
+import routes from '../routes';
+import getAuthToken from '../utils/getAuthToken.js';
 
-const getUserName = () => {
-  const userId = JSON.parse(localStorage.getItem('user'));
-  return userId.username;
-};
-
-const Messages = ({ socket, notify }) => {
+const Messages = ({ notify }) => {
   const { t } = useTranslation();
-  const user = getUserName();
-  const { currentChannel, currentId } = useSelector((state) => {
-    const id = state.channelsReducer.currentChannelId;
-    const current = state.channelsReducer.channels.find((channel) => channel.id === id);
-    return { currentChannel: current, currentId: id };
-  });
+  const sender = t('User');
+  const dispatch = useDispatch();
+  const { currentChatId } = useSelector((state) => state.chatsReducer);
+  const chatName = currentChatId !== '' ? currentChatId.split('@')[0] : '';
+  const { idInstance, apiTokenInstance } = getAuthToken();
 
   const messages = useSelector((state) => state.messagesReducer.messages
-    .filter((message) => message.channelId === currentId));
+    .filter((message) => message.chatId === currentChatId));
 
   const inputEl = useRef();
   const formEl = useRef();
 
   useEffect(() => {
-    inputEl.current.focus();
-  }, []);
+    if (currentChatId !== '') {
+      inputEl.current.focus();
+    }
+  }, [currentChatId]);
 
   const formik = useFormik({
     initialValues: {
       body: '',
     },
-    onSubmit: (values) => {
-      socket.emit('newMessage', { body: values.body, channelId: currentId, username: user }, (response) => {
-        if (response.status !== 'ok') {
-          formik.setSubmitting(false);
-          notify('error');
+    onSubmit: async ({ body }) => {
+      try {
+        const path = [
+          `${routes.basePath()}${idInstance}`,
+          'sendMessage',
+          `${apiTokenInstance}`,
+        ].join('/');
+        const response = await axios.post(`${path}`, {
+          message: body,
+          chatId: currentChatId,
+        });
+        console.log(response);
+        if (response.status === 200) {
+          const { idMessage } = response.data;
+          dispatch(messagesActions.addMessage({
+            idMessage,
+            body,
+            chatId: currentChatId,
+            sender,
+            status: 'user',
+          }));
         }
-      });
+      } catch (e) {
+        notify('error');
+      }
       formik.handleReset();
       inputEl.current.focus();
       formik.setSubmitting(false);
@@ -51,22 +69,29 @@ const Messages = ({ socket, notify }) => {
       <div className="d-flex flex-column h-100">
         <div className="bg-light mb-4 p-3 shadow-sm small">
           <p className="m-0">
-            {currentChannel
+            {chatName
               && (
                 <b>
                   #
-                  {currentChannel.name}
+                  {chatName}
                 </b>
               )}
+            {chatName === ''
+                && (
+                  <b>
+                    {t('ChooseChat')}
+                  </b>
+                )}
           </p>
           <span className="text-muted">
             {t('messages.counter', { count: messages.length })}
           </span>
         </div>
         <div id="messages-box" className="chat-messages overflow-auto px-5 ">
-          {messages.map((message) => <Message key={message.id} message={message} />)}
+          {messages.map((message) => <Message key={message.idMessage} message={message} />)}
         </div>
         <div className="mt-auto px-5 py-3">
+          {currentChatId !== '' && (
           <Form ref={formEl} onSubmit={formik.handleSubmit} className="py-1 border rounded-2">
             <Form.Group className="input-group has-validation">
               <Form.Control
@@ -93,6 +118,7 @@ const Messages = ({ socket, notify }) => {
               </button>
             </Form.Group>
           </Form>
+          )}
         </div>
       </div>
     </div>

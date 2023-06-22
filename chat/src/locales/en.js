@@ -1,5 +1,6 @@
 export default {
   translation: {
+    ChooseChat: 'Please choose contact',
     User: 'You',
     Exit: 'Log out',
     Enter: 'Log in',
@@ -7,7 +8,7 @@ export default {
     Password: 'Password',
     AskForAccount: 'Don\'t have an account?',
     Registration: 'Sign up',
-    Channels: 'Channels',
+    Chats: 'Contacts',
     EnterMessage: 'Enter your message...',
     Send: 'Send',
     Delete: 'Delete',
