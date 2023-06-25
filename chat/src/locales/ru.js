@@ -1,5 +1,6 @@
 export default {
   translation: {
+    Avatar: 'Иконка контакта',
     ChooseChat: 'Пожалуйста, выберите контакт',
     User: 'Вы',
     Exit: 'Выйти',
@@ -29,8 +30,9 @@ export default {
     ChannelRemove: 'Канал удалён',
     ChannelRenamed: 'Канал переименован',
     errors: {
+      AuthOrNetError: 'Ошибка авторизации или соединения',
       AuthorizationError: 'Пожалуйста, авторизуйте аккаунт',
-      LoginError: 'Неверные имя пользователя или пароль',
+      LoginError: 'Пожалуйста, проверьте данные для входа',
       Conflict: 'Такой пользователь уже существует',
       Required: 'Обязательное поле',
       Min3Max20: 'От 3 до 20 символов',

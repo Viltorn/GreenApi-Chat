@@ -26,8 +26,8 @@ const LoginForm = ({ notify }) => {
 
   const formik = useFormik({
     initialValues: {
-      idInstance: '',
-      apiTokenInstance: '',
+      idInstance: '1101829929',
+      apiTokenInstance: '5e57d6a36b9e43e4b3957b0188147636ad40cf798c0345b386',
     },
     onSubmit: async ({ idInstance, apiTokenInstance }) => {
       setAuthFailed(false);
@@ -48,19 +48,15 @@ const LoginForm = ({ notify }) => {
             formik.setSubmitting(false);
             setAuthFailed(true);
             inputEl.current.select();
-            notify('notAuthorized');
+            notify('notAuthorizedError');
           }
         }
       } catch (err) {
         formik.setSubmitting(false);
-        if (err.isAxiosError) {
-          setAuthFailed(true);
-          inputEl.current.select();
-        } else {
-          notify('error');
-          console.log(err);
-          throw Error('NetworkError');
-        }
+        setAuthFailed(true);
+        inputEl.current.select();
+        notify('authOrNetError');
+        console.log(err);
       }
     },
     validateOnChange: false,

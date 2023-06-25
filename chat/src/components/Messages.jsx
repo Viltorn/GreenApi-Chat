@@ -11,10 +11,14 @@ import getAuthToken from '../utils/getAuthToken.js';
 
 const Messages = ({ notify }) => {
   const { t } = useTranslation();
-  const sender = t('User');
+  const senderName = t('User');
   const dispatch = useDispatch();
   const { currentChatId } = useSelector((state) => state.chatsReducer);
-  const chatName = currentChatId !== '' ? currentChatId.split('@')[0] : '';
+  const chatName = useSelector((state) => state.chatsReducer.currentChats
+    .reduce((acc, chat) => {
+      acc = chat.id === currentChatId ? chat.name : acc;
+      return acc;
+    }, ''));
   const { idInstance, apiTokenInstance } = getAuthToken();
 
   const messages = useSelector((state) => state.messagesReducer.messages
@@ -51,7 +55,7 @@ const Messages = ({ notify }) => {
             idMessage,
             body,
             chatId: currentChatId,
-            sender,
+            senderName,
             status: 'user',
           }));
         }
@@ -73,10 +77,11 @@ const Messages = ({ notify }) => {
               && (
                 <b>
                   #
+                  {' '}
                   {chatName}
                 </b>
               )}
-            {chatName === ''
+            {currentChatId === ''
                 && (
                   <b>
                     {t('ChooseChat')}
@@ -87,7 +92,7 @@ const Messages = ({ notify }) => {
             {t('messages.counter', { count: messages.length })}
           </span>
         </div>
-        <div id="messages-box" className="chat-messages overflow-auto px-5 ">
+        <div id="messages-box" className="chat-messages overflow-auto px-5">
           {messages.map((message) => <Message key={message.idMessage} message={message} />)}
         </div>
         <div className="mt-auto px-5 py-3">

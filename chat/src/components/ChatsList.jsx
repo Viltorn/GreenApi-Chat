@@ -4,13 +4,13 @@ import { useSelector, useDispatch } from 'react-redux';
 import { actions as modalsActions } from '../slices/modalsSlice.js';
 import Chat from './Chat.jsx';
 
-const ChatsList = () => {
+const ChatsList = ({ notify }) => {
   const { t } = useTranslation();
   const { currentChats } = useSelector((state) => state.chatsReducer);
   const dispatch = useDispatch();
 
   return (
-    <div className="h-100 col-4 col-md-2 border-end pt-5 px-0 bg-light">
+    <div className="h-100 col-4 col-md-4 border-end pt-5 px-0 bg-light">
       <div className="d-flex justify-content-between mb-2 ps-4 pe-2">
         <span>{t('Chats')}</span>
         <button type="button" onClick={() => dispatch(modalsActions.openModal({ type: 'addChannel' }))} className="p-0 text-primary btn btn-group-vertical">
@@ -25,7 +25,7 @@ const ChatsList = () => {
         && (
         <ul className="nav flex-column nav-pills nav-fill px-2">
           {currentChats.map((chat) => (
-            <Chat key={chat.id} chat={chat} />
+            <Chat key={chat.id} chat={chat} notify={notify} />
           ))}
         </ul>
         )}

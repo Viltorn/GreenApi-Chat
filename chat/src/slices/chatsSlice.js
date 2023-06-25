@@ -1,5 +1,7 @@
 /* eslint-disable no-param-reassign */
 import { createSlice } from '@reduxjs/toolkit';
+import _ from 'lodash';
+import { actions as messagesActions } from './messagesSlice.js';
 
 const initialState = {
   currentChats: [],
@@ -12,12 +14,42 @@ const chatsSlice = createSlice({
   initialState,
   reducers: {
     addChats(state, { payload }) {
-      const newChats = payload;
-      state.currentChats = newChats;
+      const newChats = payload.map((chat) => {
+        if (chat.name === '') {
+          chat.name = _.uniqueId('User_');
+        }
+        return chat;
+      });
+      console.log(newChats);
+      state.currentChats = [...newChats];
     },
+    addAvatar(state, { payload }) {
+      const { id, avatarUrl } = payload;
+      console.log(id);
+      const newChats = state.currentChats.map((chat) => {
+        if (chat.id === id) {
+          chat.avatar = avatarUrl;
+        }
+        return chat;
+      });
+      state.currentChats = [...newChats];
+    },
+
     changeCurrentChat(state, { payload }) {
       const id = payload;
       state.currentChatId = id;
+    },
+
+    extraReducers: (builder) => {
+      builder
+        .addCase(messagesActions.addMessage, (state, { payload }) => {
+          const { chatId, senderName } = payload;
+          const name = senderName !== '' ? senderName : _.uniqueId('User_');
+          const oldChat = state.currentChats.find((chat) => chat.id === chatId);
+          if (oldChat) {
+            state.currentChats = [{ id: chatId, name, type: 'user' }, ...state.currentChats];
+          }
+        });
     },
     // archiveChat(state, { payload }) {
     //   state.channels.push(payload);

@@ -4,7 +4,7 @@ import cn from 'classnames';
 const Message = ({ message }) => {
   const {
     body,
-    sender,
+    senderName,
     idMessage,
     status,
   } = message;
@@ -14,7 +14,7 @@ const Message = ({ message }) => {
 
   return (
     <div key={idMessage} className="text-break mb-2">
-      <b className={classes}>{sender}</b>
+      <b className={classes}>{senderName}</b>
       :&nbsp;
       {body}
     </div>

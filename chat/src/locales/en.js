@@ -1,5 +1,6 @@
 export default {
   translation: {
+    Avatar: 'Contact avatar',
     ChooseChat: 'Please choose contact',
     User: 'You',
     Exit: 'Log out',
@@ -29,8 +30,9 @@ export default {
     ChannelRemove: 'Channel deleted',
     ChannelRenamed: 'Channel renamed',
     errors: {
+      AuthOrNetError: 'Authorization or Network problem',
       AuthorizationError: 'Please, authorize your account',
-      LoginError: 'Invalid username or password',
+      LoginError: 'Please check your credentials',
       Conflict: 'Username already exists',
       Required: 'Field is required',
       Min3Max20: 'Must be from 3 to 20 symbols',

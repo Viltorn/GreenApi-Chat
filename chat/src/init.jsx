@@ -42,8 +42,11 @@ const Init = async () => {
       case 'rename':
         toast.success(t('ChannelRenamed'), settings);
         break;
-      case 'notAuthorized':
+      case 'notAuthorizedError':
         toast.error(t('errors.AuthorizationError'), settings);
+        break;
+      case 'authOrNetError':
+        toast.error(t('errors.AuthOrNetError'), settings);
         break;
       default:
         toast.error(t('errors.NetworkError'), settings);
