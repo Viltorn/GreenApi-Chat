@@ -10,15 +10,16 @@ import {
   FormLabel,
 } from 'react-bootstrap';
 import { actions as modalActions } from '../slices/modalsSlice';
-import { ChannelSchema } from '../utils/validation';
+import { actions as chatsActions } from '../slices/chatsSlice.js';
+import { chatsNamesSchema } from '../utils/validation';
 
-const RenameChannel = ({ socket, notify }) => {
+const RenameChannel = ({ notify }) => {
   const { t } = useTranslation();
   const inputEl = useRef();
   const dispatch = useDispatch();
-  const { channels } = useSelector((state) => state.channelsReducer);
+  const { currentChats } = useSelector((state) => state.chatsReducer);
   const { id } = useSelector((state) => state.modalsReducer);
-  const channelNames = channels.map((channel) => channel.name);
+  const chatNames = currentChats.map((chat) => chat.name);
 
   useEffect(() => {
     inputEl.current.focus();
@@ -30,26 +31,20 @@ const RenameChannel = ({ socket, notify }) => {
 
   const formik = useFormik({
     initialValues: {
-      channel: '',
+      chatName: '',
     },
-    validationSchema: ChannelSchema(channelNames),
-    onSubmit: (values) => {
-      socket.emit('renameChannel', { id, name: values.channel }, (response) => {
-        if (response.status === 'ok') {
-          handleClose();
-          notify('rename');
-        } else {
-          notify('error');
-          formik.setSubmitting(false);
-        }
-      });
+    validationSchema: chatsNamesSchema(chatNames),
+    onSubmit: ({ chatName }) => {
+      dispatch(chatsActions.changeName({ chatName, id }));
+      handleClose();
+      notify('rename');
     },
   });
 
   return (
     <Modal show>
       <Modal.Header closeButton onHide={handleClose}>
-        <Modal.Title>{t('RenameChannel')}</Modal.Title>
+        <Modal.Title>{t('RenameChat')}</Modal.Title>
       </Modal.Header>
 
       <Modal.Body>
@@ -57,21 +52,21 @@ const RenameChannel = ({ socket, notify }) => {
           <fieldset disabled={formik.isSubmitting}>
             <FormGroup>
               <FormControl
-                id="channel"
+                id="chatName"
                 type="text"
                 ref={inputEl}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
-                value={formik.values.channel}
+                value={formik.values.chatName}
                 data-testid="input-body"
-                isInvalid={formik.errors.channel}
-                name="channel"
+                isInvalid={formik.errors.chatName}
+                name="chatName"
                 className="mb-2"
               />
-              {formik.errors.channel ? (
-                <div className="invalid-feedback">{t(`errors.${formik.errors.channel}`)}</div>
+              {formik.errors.chatName ? (
+                <div className="invalid-feedback">{t(`errors.${formik.errors.chatName}`)}</div>
               ) : null}
-              <FormLabel htmlFor="channel" className="visually-hidden">{t('ChannelName')}</FormLabel>
+              <FormLabel htmlFor="chatName" className="visually-hidden">{t('ChatName')}</FormLabel>
               <FormGroup className="d-flex justify-content-end">
                 <Button variant="secondary" onClick={handleClose} className="me-2" data-bs-dismiss="modal">{t('Cancel')}</Button>
                 <Button variant="primary" type="submit">{t('Send')}</Button>

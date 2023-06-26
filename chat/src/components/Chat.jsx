@@ -9,7 +9,7 @@ import { actions as chatsActions } from '../slices/chatsSlice.js';
 import getAvatar from '../utils/getAvatar.js';
 import getAuthToken from '../utils/getAuthToken.js';
 import authContext from '../contexts/authContext.js';
-import avatarLogo from '../assets/avatar.jpg';
+import avatarLogo from '../assets/DefaultAvatar.png';
 
 const ButtonEl = ({
   name,
@@ -24,14 +24,16 @@ const ButtonEl = ({
       type="button"
       className={classes}
     >
-      {avatar
+      <small>
+        {avatar
       && (<img src={avatar} className="rounded-circle img-fluid" style={{ height: '30px', width: '30px' }} alt={t('Avatar')} />
       )}
-      {(!avatar || avatar === '')
+        {(!avatar || avatar === '')
       && (<img src={avatarLogo} className="rounded-circle img-fluid" style={{ height: '30px', width: '30px' }} alt={t('Avatar')} />
       )}
-      {' '}
-      {`${name}`}
+        {' '}
+        {`${name}`}
+      </small>
     </button>
   );
 };
@@ -49,7 +51,6 @@ const Chat = ({ chat, notify }) => {
     'rounded-0': true,
     'text-start': true,
     'text-truncate': true,
-    'm-0': true,
     btn: true,
     'btn-secondary': id === currentChatId,
   });
@@ -81,18 +82,12 @@ const Chat = ({ chat, notify }) => {
       <Dropdown role="group" className="d-flex dropdown btn-group">
         <ButtonEl name={name} avatar={avatar} change={changeChannel} classes={classes} />
         <Dropdown.Toggle variant="" id="dropdown-basic">
-          <span className="visually-hidden">{t('ChannelToogle')}</span>
+          <span className="visually-hidden">{t('ChatToogle')}</span>
         </Dropdown.Toggle>
         <Dropdown.Menu>
           <Dropdown.Item
             href="#"
-            onClick={() => dispatch(modalsActions.openModal({ type: 'removeChannel', id }))}
-          >
-            {t('Delete')}
-          </Dropdown.Item>
-          <Dropdown.Item
-            href="#"
-            onClick={() => dispatch(modalsActions.openModal({ type: 'renameChannel', id }))}
+            onClick={() => dispatch(modalsActions.openModal({ type: 'renameChat', id }))}
           >
             {t('Rename')}
           </Dropdown.Item>
@@ -103,3 +98,10 @@ const Chat = ({ chat, notify }) => {
 };
 
 export default Chat;
+
+/* <Dropdown.Item
+href="#"
+onClick={() => dispatch(modalsActions.openModal({ type: 'removeChannel', id }))}
+>
+{t('Delete')}
+</Dropdown.Item> */

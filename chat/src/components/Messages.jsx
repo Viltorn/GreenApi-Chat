@@ -57,6 +57,7 @@ const Messages = ({ notify }) => {
             chatId: currentChatId,
             senderName,
             status: 'user',
+            msgType: 'textMessage',
           }));
         }
       } catch (e) {

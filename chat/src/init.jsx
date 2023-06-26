@@ -34,19 +34,22 @@ const Init = async () => {
     };
     switch (status) {
       case 'add':
-        toast.success(t('ChannelCreated'), settings);
+        toast.success(t('ChatCreated'), settings);
         break;
       case 'remove':
-        toast.success(t('ChannelRemove'), settings);
+        toast.success(t('ChatRemove'), settings);
         break;
       case 'rename':
-        toast.success(t('ChannelRenamed'), settings);
+        toast.success(t('ChatRenamed'), settings);
         break;
       case 'notAuthorizedError':
         toast.error(t('errors.AuthorizationError'), settings);
         break;
       case 'authOrNetError':
         toast.error(t('errors.AuthOrNetError'), settings);
+        break;
+      case 'wrongPhone':
+        toast.error(t('errors.WrongPhone'), settings);
         break;
       default:
         toast.error(t('errors.NetworkError'), settings);

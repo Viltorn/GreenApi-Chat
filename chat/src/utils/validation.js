@@ -5,26 +5,16 @@ export const LoginSchema = Yup.object().shape({
   password: Yup.string(),
 });
 
-export const SignUpSchema = Yup.object().shape({
-  username: Yup
-    .string()
+export const chatsSchema = (chatIds) => Yup.object({
+  phone: Yup
+    .number('OnlyNumber').integer('OnlyNumber')
     .required('Required')
-    .max(20, 'Min3Max20')
-    .min(3, 'Min3Max20'),
-  password: Yup
-    .string()
-    .required('Required')
-    .min(6, 'Min6'),
-  repeatPass: Yup
-    .string()
-    .required('Required')
-    .oneOf([Yup.ref('password'), null], 'Identical'),
+    .notOneOf(chatIds, 'Unique'),
 });
 
-export const ChannelSchema = (channelNames) => Yup.object({
-  channel: Yup
+export const chatsNamesSchema = (chatNames) => Yup.object({
+  chatName: Yup
     .string()
-    .notOneOf(channelNames, 'Unique')
-    .max(20, 'Min3Max20')
-    .min(3, 'Min3Max20'),
+    .required('Required')
+    .notOneOf(chatNames, 'UniqueName'),
 });

@@ -27,13 +27,13 @@ const Header = () => {
         </a>
         <div className="btn-group col-auto" role="group" aria-label="outlined">
           {Object.keys(lngs).map((lng) => (
-            <button key={lng} className={cn('btn', 'btn-outline-primary', { active: i18n.resolvedLanguage === lng })} type="button" onClick={() => i18n.changeLanguage(lng)}>
+            <button key={lng} className={cn('btn', 'btn-outline-success', { active: i18n.resolvedLanguage === lng })} type="button" onClick={() => i18n.changeLanguage(lng)}>
               {lngs[lng]}
             </button>
           ))}
         </div>
         {isLogged() ? (
-          <button type="button" onClick={makeLogOut} className="btn btn-primary">{t('Exit')}</button>
+          <button type="button" onClick={makeLogOut} className="btn btn-success">{t('Exit')}</button>
         ) : null}
       </div>
     </nav>

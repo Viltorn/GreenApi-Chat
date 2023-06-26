@@ -17,6 +17,18 @@ import getModal from '../modals/index.js';
 import authContext from '../contexts/authContext.js';
 import getAuthToken from '../utils/getAuthToken.js';
 
+const getMessageBody = (data) => {
+  const type = data.typeMessage;
+  switch (type) {
+    case 'audioMessage':
+      return { msgType: type, body: data.fileMessageData.downloadUrl };
+    case 'textMessage':
+      return { msgType: 'textMessage', body: data.textMessageData.textMessage };
+    default:
+      return { msgType: 'textMessage', body: '<wrong message format>' };
+  }
+};
+
 const MainWindow = ({ notify }) => {
   const dispatch = useDispatch();
   const { isOpened, type } = useSelector((state) => state.modalsReducer);
@@ -39,11 +51,7 @@ const MainWindow = ({ notify }) => {
   useEffect(() => {
     const getData = async () => {
       try {
-        const response = await axios.get([
-          `${routes.basePath()}${idInstance}`,
-          'getContacts',
-          `${apiTokenInstance}`,
-        ].join('/'));
+        const response = await axios.get(routes.getContactsPath(idInstance, apiTokenInstance));
         const { data } = response;
         dispatch(chatsActions.addChats(data));
       } catch (e) {
@@ -57,21 +65,9 @@ const MainWindow = ({ notify }) => {
   }, [apiTokenInstance, idInstance, navigate, logOut, showError, dispatch]);
 
   useEffect(() => {
-    const deletNotPath = [
-      `${routes.basePath()}${idInstance}`,
-      'deleteNotification',
-      `${apiTokenInstance}`,
-    ].join('/');
-
-    const getNotpath = [
-      `${routes.basePath()}${idInstance}`,
-      'receiveNotification',
-      `${apiTokenInstance}`,
-    ].join('/');
-
-    const getNotification = async () => {
+    const getNotification = () => {
       console.log('Waiting incoming notifications...');
-      axios.get(getNotpath)
+      axios.get(routes.getNotifPath(idInstance, apiTokenInstance))
         .then((response) => {
           const webhookData = response.data;
           const defaultId = 0;
@@ -85,20 +81,22 @@ const MainWindow = ({ notify }) => {
               const { senderName } = webhookData.body.senderData;
               const { idMessage } = webhookData.body;
               const { chatId } = webhookData.body.senderData;
-              const body = webhookData.body.messageData.textMessageData.textMessage;
+              const { body, msgType } = getMessageBody(webhookData.body.messageData);
               dispatch(messagesActions.addMessage({
                 idMessage,
                 body,
                 chatId,
                 senderName,
                 status: '',
+                msgType,
               }));
             }
             return webhookId;
           }
           return defaultId;
         })
-        .then((webhookId) => axios.delete(`${deletNotPath}/${webhookId}`))
+        .then((webhookId) => axios
+          .delete(routes.deleteNotifPath(idInstance, apiTokenInstance, webhookId)))
         .then(() => setTimeout(() => getNotification(), 3000))
         .catch((e) => {
           showError(e.message);
@@ -108,49 +106,6 @@ const MainWindow = ({ notify }) => {
         });
     };
 
-    //   try {
-    //   // Method waits for 20 sec and returns empty string if there were no sent messages
-    //     const response = await axios.get(getNotpath);
-    //     const webhookData = response.data;
-    //     if (webhookData) {
-    //       const webhookId = webhookData.receiptId;
-    //       const { typeWebhook } = webhookData.body;
-    //       if (typeWebhook === 'stateInstanceChanged') {
-    //         if (webhookData.stateInstance === 'notauthorized') {
-    //           const deleteNotification = await axios.delete(`${deletNotPath}/${webhookId}`);
-    //           if (deleteNotification.status === 200) {
-    //             throw new Error('notAuthorized');
-    //           }
-    //         } else {
-    //           await axios.delete(`${deletNotPath}/${webhookId}`);
-    //         }
-    //       } else if (typeWebhook === 'incomingMessageReceived') {
-    //         const { senderName } = webhookData.body.senderData;
-    //         const { idMessage } = webhookData.body;
-    //         const { chatId } = webhookData.body.senderData;
-    //         const sender = senderName !== '' ? senderName : chatId;
-    //         const body = webhookData.body.messageData.textMessageData.textMessage;
-    //         dispatch(messagesActions.addMessage({
-    //           idMessage,
-    //           body,
-    //           chatId,
-    //           sender,
-    //           status: '',
-    //         }));
-    //         const deleteNotification = await axios.delete(`${deletNotPath}/${webhookId}`);
-    //         if (deleteNotification.status === 200) {
-    //           setTimeout(() => getNotification(), 3000);
-    //         }
-    //       }
-    //     } else {
-    //       setTimeout(() => getNotification(), 3000);
-    //     }
-    //   } catch (e) {
-    //     showError(e.message);
-    //     logOut();
-    //     console.log(e);
-    //   }
-    // };
     getNotification();
   }, [apiTokenInstance, dispatch, idInstance, logOut, showError, navigate]);
 

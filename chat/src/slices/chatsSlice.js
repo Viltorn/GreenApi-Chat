@@ -20,12 +20,17 @@ const chatsSlice = createSlice({
         }
         return chat;
       });
-      console.log(newChats);
       state.currentChats = [...newChats];
+    },
+    addChat(state, { payload }) {
+      const newChat = payload;
+      if (newChat.name === '') {
+        newChat.name = _.uniqueId('User_');
+      }
+      state.currentChats = [...state.currentChats, newChat];
     },
     addAvatar(state, { payload }) {
       const { id, avatarUrl } = payload;
-      console.log(id);
       const newChats = state.currentChats.map((chat) => {
         if (chat.id === id) {
           chat.avatar = avatarUrl;
@@ -35,6 +40,16 @@ const chatsSlice = createSlice({
       state.currentChats = [...newChats];
     },
 
+    changeName(state, { payload }) {
+      const { id, chatName } = payload;
+      const newChats = state.currentChats.map((chat) => {
+        if (chat.id === id) {
+          chat.name = chatName;
+        }
+        return chat;
+      });
+      state.currentChats = [...newChats];
+    },
     changeCurrentChat(state, { payload }) {
       const id = payload;
       state.currentChatId = id;
