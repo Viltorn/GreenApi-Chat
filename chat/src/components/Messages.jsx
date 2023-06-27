@@ -86,7 +86,7 @@ const Messages = ({ notify }) => {
             {t('messages.counter', { count: messages.length })}
           </span>
         </div>
-        <div id="messages-box" className="chat-messages overflow-auto px-5">
+        <div id="messages-box" className="chat-messages overflow-auto px-3">
           {currentChatId === ''
                 && (
                   <p>
@@ -95,11 +95,13 @@ const Messages = ({ notify }) => {
                 )}
           {messages.map((message) => <Message key={message.idMessage} message={message} />)}
         </div>
-        <div className="mt-auto px-5 py-3">
+        <div className="mt-auto px-3 py-3">
           {currentChatId !== '' && (
           <Form ref={formEl} onSubmit={formik.handleSubmit} className="py-1 border rounded-2">
             <Form.Group className="input-group has-validation">
               <Form.Control
+                as="textarea"
+                rows={2}
                 className="border-0 p-0 ps-2 form-control"
                 onChange={formik.handleChange}
                 aria-label="Новое сообщение"

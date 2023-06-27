@@ -3,7 +3,7 @@ import cn from 'classnames';
 import { useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import defaultAvatar from '../assets/DefaultAvatar.png';
-import voiceMsg from '../assets/VoiceMsg.png';
+// import voiceMsg from '../assets/VoiceMsg.png';
 
 const Message = ({ message }) => {
   const { currentChats } = useSelector((state) => state.chatsReducer);
@@ -23,7 +23,7 @@ const Message = ({ message }) => {
   });
 
   return (
-    <div key={idMessage} className="text-break mb-2">
+    <div key={idMessage} className="text-break mb-2 align-middle">
       {status === 'user'
         && (<b className={classes}>{senderName}</b>
         )}
@@ -35,9 +35,17 @@ const Message = ({ message }) => {
       )}
       :&nbsp;
       {msgType === 'textMessage' && body}
-      {msgType === 'audioMessage' && <a href={body} rel="noreferrer" target="_blank"><img src={voiceMsg} alt="voice message" style={{ height: '30px', width: '30px' }} /></a>}
+      {msgType === 'audioMessage' && (
+      <audio controls className="mw-100 w-100 mh-50">
+        <track kind="captions" />
+        <source src={body} type='audio/ogg; codecs="vorbis"' />
+      </audio>
+      )}
     </div>
   );
 };
 
 export default Message;
+
+/* <a href={body} rel="noreferrer" target="_blank">
+<img src={voiceMsg} alt="voice message" style={{ height: '30px', width: '30px' }} /></a>} */

@@ -11,7 +11,7 @@ const ChatsList = ({ notify }) => {
 
   return (
     <div className="h-100 col-4 col-md-4 border-end pt-5 px-0 bg-light">
-      <div className="d-flex justify-content-between mb-2 ps-4 pe-2">
+      <div className="d-flex justify-content-between mb-2 ps-3 pe-2">
         <span>{t('Chats')}</span>
         <button type="button" onClick={() => dispatch(modalsActions.openModal({ type: 'addChat' }))} className="p-0 text-primary btn btn-group-vertical">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="20" height="20" fill="currentColor">
