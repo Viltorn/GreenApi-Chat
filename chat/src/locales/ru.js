@@ -1,7 +1,7 @@
 export default {
   translation: {
     Avatar: 'Иконка контакта',
-    ChooseChat: 'Пожалуйста, выберите контакт',
+    ChooseChat: 'Выберите контакт чтобы начать общение',
     User: 'Вы',
     Exit: 'Выйти',
     Enter: 'Войти',

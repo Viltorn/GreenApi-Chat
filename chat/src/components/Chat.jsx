@@ -1,21 +1,21 @@
-import React, { useCallback, useContext } from 'react';
+import React, { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import cn from 'classnames';
 import { Dropdown } from 'react-bootstrap';
-import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { actions as modalsActions } from '../slices/modalsSlice.js';
 import { actions as chatsActions } from '../slices/chatsSlice.js';
 import getAvatar from '../utils/getAvatar.js';
 import getAuthToken from '../utils/getAuthToken.js';
-import authContext from '../contexts/authContext.js';
-import avatarLogo from '../assets/DefaultAvatar.png';
+import defaultAvatar from '../assets/DefaultAvatar.png';
+import exclamation from '../assets/Exclamation.png';
 
 const ButtonEl = ({
   name,
   classes,
   change,
   avatar,
+  read,
 }) => {
   const { t } = useTranslation();
   return (
@@ -24,13 +24,18 @@ const ButtonEl = ({
       type="button"
       className={classes}
     >
-      <small>
+      <span style={{ position: 'relative' }}>
+        {read === 'not'
+      && (<img src={exclamation} className="rounded-circle float-right" style={{ postion: 'relative', height: '15px', width: '15px' }} alt={t('Avatar')} />
+      )}
         {avatar
-      && (<img src={avatar} className="rounded-circle img-fluid" style={{ height: '30px', width: '30px' }} alt={t('Avatar')} />
+      && (<img src={avatar} className="rounded-circle img-fluid" style={{ maxHeight: '30px', maxWidth: '30px' }} alt={t('Avatar')} />
       )}
         {(!avatar || avatar === '')
-      && (<img src={avatarLogo} className="rounded-circle img-fluid" style={{ height: '30px', width: '30px' }} alt={t('Avatar')} />
+      && (<img src={defaultAvatar} className="rounded-circle img-fluid" style={{ height: '30px', width: '30px' }} alt={t('Avatar')} />
       )}
+      </span>
+      <small>
         {' '}
         {`${name}`}
       </small>
@@ -41,10 +46,10 @@ const ButtonEl = ({
 const Chat = ({ chat, notify }) => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
-  const { logOut } = useContext(authContext);
   const { idInstance, apiTokenInstance } = getAuthToken();
-  const navigate = useNavigate();
-  const { id, name, avatar } = chat;
+  const {
+    id, name, avatar, read,
+  } = chat;
   const { currentChatId } = useSelector((state) => state.chatsReducer);
   const classes = cn({
     'w-100': true,
@@ -52,7 +57,7 @@ const Chat = ({ chat, notify }) => {
     'text-start': true,
     'text-truncate': true,
     btn: true,
-    'btn-secondary': id === currentChatId,
+    'bg-secondary': id === currentChatId,
   });
 
   const showError = useCallback((e) => {
@@ -71,16 +76,20 @@ const Chat = ({ chat, notify }) => {
       }
     } catch (err) {
       showError(err.message);
-      console.log(e);
-      logOut();
-      navigate('/');
+      dispatch(chatsActions.changeCurrentChat(id));
     }
   };
 
   return (
     <li className="nav-item w-100">
       <Dropdown role="group" className="d-flex dropdown btn-group">
-        <ButtonEl name={name} avatar={avatar} change={changeChannel} classes={classes} />
+        <ButtonEl
+          name={name}
+          read={read}
+          avatar={avatar}
+          change={changeChannel}
+          classes={classes}
+        />
         <Dropdown.Toggle variant="" id="dropdown-basic">
           <span className="visually-hidden">{t('ChatToogle')}</span>
         </Dropdown.Toggle>

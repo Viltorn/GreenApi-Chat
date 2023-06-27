@@ -39,7 +39,6 @@ const chatsSlice = createSlice({
       });
       state.currentChats = [...newChats];
     },
-
     changeName(state, { payload }) {
       const { id, chatName } = payload;
       const newChats = state.currentChats.map((chat) => {
@@ -53,40 +52,34 @@ const chatsSlice = createSlice({
     changeCurrentChat(state, { payload }) {
       const id = payload;
       state.currentChatId = id;
+      state.currentChats = state.currentChats.map((chat) => {
+        if (chat.id === id) {
+          chat.read = 'yes';
+        }
+        return chat;
+      });
     },
-
-    extraReducers: (builder) => {
-      builder
-        .addCase(messagesActions.addMessage, (state, { payload }) => {
-          const { chatId, senderName } = payload;
-          const name = senderName !== '' ? senderName : _.uniqueId('User_');
-          const oldChat = state.currentChats.find((chat) => chat.id === chatId);
-          if (oldChat) {
-            state.currentChats = [{ id: chatId, name, type: 'user' }, ...state.currentChats];
-          }
-        });
-    },
-    // archiveChat(state, { payload }) {
-    //   state.channels.push(payload);
-    // },
-    // extractChat(state, { payload }) {
-    //   const { id } = payload;
-    //   const newState = state.channels.filter((channel) => channel.id !== id);
-    //   state.channels = newState;
-    //   if (state.currentChannelId === id) {
-    //     state.currentChannelId = state.channels[0].id || '';
-    //   }
-    // },
-    // renameChat(state, { payload }) {
-    //   const { id, name } = payload;
-    //   const newState = state.channels.map((channel) => {
-    //     if (channel.id === id) {
-    //       channel.name = name;
-    //     }
-    //     return channel;
-    //   });
-    //   state.channels = newState;
-    // },
+  },
+  extraReducers: (builder) => {
+    builder
+      .addCase(messagesActions.addMessage, (state, { payload }) => {
+        const { chatId, senderName } = payload;
+        const name = senderName !== '' ? senderName : _.uniqueId('User_');
+        const oldChat = state.currentChats.find((chat) => chat.id === chatId);
+        if (!oldChat) {
+          state.currentChats = [{
+            id: chatId,
+            name,
+            type: 'user',
+            read: 'not',
+          }, ...state.currentChats];
+        }
+        if (oldChat && state.currentChatId !== chatId) {
+          const restChats = state.currentChats.filter((chat) => chat.id !== chatId);
+          oldChat.read = 'not';
+          state.currentChats = [oldChat, ...restChats];
+        }
+      });
   },
 });
 

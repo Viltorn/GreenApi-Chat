@@ -1,7 +1,7 @@
 export default {
   translation: {
     Avatar: 'Contact avatar',
-    ChooseChat: 'Please choose contact',
+    ChooseChat: 'Choose contact to start messaging',
     User: 'You',
     Exit: 'Log out',
     Enter: 'Log in',

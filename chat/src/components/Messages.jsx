@@ -48,7 +48,6 @@ const Messages = ({ notify }) => {
           message: body,
           chatId: currentChatId,
         });
-        console.log(response);
         if (response.status === 200) {
           const { idMessage } = response.data;
           dispatch(messagesActions.addMessage({
@@ -82,18 +81,18 @@ const Messages = ({ notify }) => {
                   {chatName}
                 </b>
               )}
-            {currentChatId === ''
-                && (
-                  <b>
-                    {t('ChooseChat')}
-                  </b>
-                )}
           </p>
           <span className="text-muted">
             {t('messages.counter', { count: messages.length })}
           </span>
         </div>
         <div id="messages-box" className="chat-messages overflow-auto px-5">
+          {currentChatId === ''
+                && (
+                  <p>
+                    {t('ChooseChat')}
+                  </p>
+                )}
           {messages.map((message) => <Message key={message.idMessage} message={message} />)}
         </div>
         <div className="mt-auto px-5 py-3">

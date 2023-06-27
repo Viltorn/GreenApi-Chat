@@ -23,7 +23,7 @@ const ChatsList = ({ notify }) => {
       </div>
       {currentChats.length !== 0
         && (
-        <ul className="nav flex-column nav-pills nav-fill px-2">
+        <ul className="nav flex-column nav-pills nav-fill px-0">
           {currentChats.map((chat) => (
             <Chat key={chat.id} chat={chat} notify={notify} />
           ))}
