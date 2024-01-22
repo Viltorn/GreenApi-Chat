@@ -32,8 +32,8 @@ jobs:
 
       - name: Install
         # Install project
-        run: cd frontend && make install
+        run: cd chat && make install
         # Add environment variables
 
       - name: Run linter
-        run: cd frontend && make lint
+        run: cd chat && make lint

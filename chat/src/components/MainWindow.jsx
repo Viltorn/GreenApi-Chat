@@ -48,6 +48,34 @@ const MainWindow = ({ notify }) => {
     notify(e);
   }, [notify]);
 
+  const processError = useCallback((errMessage) => {
+    showError(errMessage);
+    logOut();
+    navigate('/');
+    console.log(errMessage);
+  }, [logOut, showError, navigate]);
+
+  const processWebhookData = useCallback((webhookData) => {
+    const { typeWebhook } = webhookData.body;
+    if (typeWebhook === 'stateInstanceChanged' && webhookData.stateInstance === 'notauthorized') {
+      processError('notAuthorizedError');
+    }
+    if (typeWebhook === 'incomingMessageReceived') {
+      const { senderName } = webhookData.body.senderData;
+      const { idMessage } = webhookData.body;
+      const { chatId } = webhookData.body.senderData;
+      const { body, msgType } = getMessageBody(webhookData.body.messageData);
+      dispatch(messagesActions.addMessage({
+        idMessage,
+        body,
+        chatId,
+        senderName,
+        status: '',
+        msgType,
+      }));
+    }
+  }, [dispatch, processError]);
+
   useEffect(() => {
     const getData = async () => {
       try {
@@ -55,59 +83,35 @@ const MainWindow = ({ notify }) => {
         const { data } = response;
         dispatch(chatsActions.addChats(data));
       } catch (e) {
-        showError(e.message);
-        console.log(e);
-        logOut();
-        navigate('/');
+        processError(e.message);
       }
     };
     getData();
-  }, [apiTokenInstance, idInstance, navigate, logOut, showError, dispatch]);
+  }, [apiTokenInstance, idInstance, dispatch, processError]);
 
   useEffect(() => {
-    const getNotification = () => {
-      console.log('Waiting incoming notifications...');
-      axios.get(routes.getNotifPath(idInstance, apiTokenInstance))
-        .then((response) => {
+    const getNotification = async () => {
+      try {
+        const response = await axios.get(routes.getNotifPath(idInstance, apiTokenInstance));
+        if (response) {
+          console.log(response);
+          console.log(1);
           const webhookData = response.data;
           const defaultId = 0;
+          const webhookId = webhookData ? webhookData.receiptId : defaultId;
           if (webhookData) {
-            const webhookId = webhookData.receiptId;
-            const { typeWebhook } = webhookData.body;
-            if (typeWebhook === 'stateInstanceChanged' && webhookData.stateInstance === 'notauthorized') {
-              showError('notAuthorizedError');
-            }
-            if (typeWebhook === 'incomingMessageReceived') {
-              const { senderName } = webhookData.body.senderData;
-              const { idMessage } = webhookData.body;
-              const { chatId } = webhookData.body.senderData;
-              const { body, msgType } = getMessageBody(webhookData.body.messageData);
-              dispatch(messagesActions.addMessage({
-                idMessage,
-                body,
-                chatId,
-                senderName,
-                status: '',
-                msgType,
-              }));
-            }
-            return webhookId;
+            processWebhookData(webhookData);
           }
-          return defaultId;
-        })
-        .then((webhookId) => axios
-          .delete(routes.deleteNotifPath(idInstance, apiTokenInstance, webhookId)))
-        .then(() => setTimeout(() => getNotification(), 3000))
-        .catch((e) => {
-          showError(e.message);
-          logOut();
-          navigate('/');
-          console.log(e);
-        });
+          await axios.delete(routes.deleteNotifPath(idInstance, apiTokenInstance, webhookId));
+          setTimeout(() => getNotification(), 3000);
+        }
+      } catch (e) {
+        processError(e.message);
+      }
     };
 
     getNotification();
-  }, [apiTokenInstance, dispatch, idInstance, logOut, showError, navigate]);
+  }, [apiTokenInstance, dispatch, idInstance, processError, processWebhookData]);
 
   return (
     <>

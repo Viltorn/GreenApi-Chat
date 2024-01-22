@@ -24,6 +24,21 @@ const LoginForm = ({ notify }) => {
     inputEl.current.focus();
   }, []);
 
+  const processFormResponse = (response, formik, credentials) => {
+    const userStatus = response.data.stateInstance;
+    const { idInstance, apiTokenInstance } = credentials;
+    if (userStatus === 'authorized') {
+      logIn({ idInstance, apiTokenInstance });
+      const { from } = { from: { pathname: '/' } };
+      navigate(from);
+    } else {
+      formik.setSubmitting(false);
+      setAuthFailed(true);
+      inputEl.current.select();
+      notify('notAuthorizedError');
+    }
+  };
+
   const formik = useFormik({
     initialValues: {
       idInstance: '1101829929',
@@ -31,7 +46,6 @@ const LoginForm = ({ notify }) => {
     },
     onSubmit: async ({ idInstance, apiTokenInstance }) => {
       setAuthFailed(false);
-
       try {
         const res = await axios.get([
           `${routes.basePath()}${idInstance}`,
@@ -39,17 +53,7 @@ const LoginForm = ({ notify }) => {
           `${apiTokenInstance}`,
         ].join('/'));
         if (res.status === 200) {
-          const userStatus = res.data.stateInstance;
-          if (userStatus === 'authorized') {
-            logIn({ idInstance, apiTokenInstance });
-            const { from } = { from: { pathname: '/' } };
-            navigate(from);
-          } else {
-            formik.setSubmitting(false);
-            setAuthFailed(true);
-            inputEl.current.select();
-            notify('notAuthorizedError');
-          }
+          processFormResponse(res, formik, { idInstance, apiTokenInstance });
         }
       } catch (err) {
         formik.setSubmitting(false);

@@ -10,9 +10,6 @@ import {
   Navigate,
   useLocation,
 } from 'react-router-dom';
-// import { useDispatch } from 'react-redux';
-// import axios from 'axios';
-// import routes from '../routes';
 import LoginForm from './LoginForm.jsx';
 import ErrorPage from './error-page.jsx';
 import Header from './Header.jsx';
