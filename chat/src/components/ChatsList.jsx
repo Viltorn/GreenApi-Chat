@@ -1,7 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector, useDispatch } from 'react-redux';
-import { actions as modalsActions } from '../slices/modalsSlice.js';
+import { actions as modalsActions } from '../store/slices/modalsSlice.js';
 import Chat from './Chat.jsx';
 
 const ChatsList = ({ notify }) => {

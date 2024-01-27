@@ -31,6 +31,7 @@ export default {
     ChannelRemove: 'Chat deleted',
     ChatRenamed: 'Chat renamed',
     NumberFormat: 'Format',
+    Loading: 'Loading...',
     errors: {
       WrongPhone: 'No whatsApp for this number',
       AuthOrNetError: 'Authorization or Network problem',

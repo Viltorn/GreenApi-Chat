@@ -31,6 +31,7 @@ export default {
     ChannelRemove: 'Канал удалён',
     ChatRenamed: 'Чат переименован',
     NumberFormat: 'Формат',
+    Loading: 'Загрузка...',
     errors: {
       WrongPhone: 'WhatsApp не найден для этого номера',
       AuthOrNetError: 'Ошибка авторизации или соединения',

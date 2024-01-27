@@ -9,8 +9,8 @@ import {
   Button,
   FormLabel,
 } from 'react-bootstrap';
-import { actions as modalActions } from '../slices/modalsSlice';
-import { actions as chatsActions } from '../slices/chatsSlice.js';
+import { actions as modalActions } from '../store/slices/modalsSlice.js';
+import { actions as chatsActions } from '../store/slices/chatsSlice.js';
 import { chatsNamesSchema } from '../utils/validation';
 
 const RenameChannel = ({ notify }) => {
@@ -35,7 +35,8 @@ const RenameChannel = ({ notify }) => {
     },
     validationSchema: chatsNamesSchema(chatNames),
     onSubmit: ({ chatName }) => {
-      dispatch(chatsActions.changeName({ chatName, id }));
+      const nameData = { chatName, id };
+      dispatch(chatsActions.changeName(nameData));
       handleClose();
       notify('rename');
     },

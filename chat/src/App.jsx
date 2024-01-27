@@ -10,11 +10,11 @@ import {
   Navigate,
   useLocation,
 } from 'react-router-dom';
-import LoginForm from './LoginForm.jsx';
-import ErrorPage from './error-page.jsx';
-import Header from './Header.jsx';
-import authContext from '../contexts/authContext.js';
-import MainWindow from './MainWindow.jsx';
+import LoginForm from './pages/LoginForm.jsx';
+import ErrorPage from './pages/ErrorPage.jsx';
+import Header from './components/Header.jsx';
+import Loader from './components/Loader.jsx';
+import authContext from './contexts/authContext.js';
 
 const PrivateRoute = ({ children }) => {
   const { isLogged } = useContext(authContext);
@@ -33,7 +33,7 @@ const App = ({ notify }) => (
         path="/"
         element={(
           <PrivateRoute>
-            <MainWindow notify={notify} />
+            <Loader notify={notify} />
           </PrivateRoute>
             )}
       />

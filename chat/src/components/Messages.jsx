@@ -5,30 +5,27 @@ import { useFormik } from 'formik';
 import { Form } from 'react-bootstrap';
 import axios from 'axios';
 import Message from './Message.jsx';
-import { actions as messagesActions } from '../slices/messagesSlice.js';
-import routes from '../routes';
+import { actions as messagesActions } from '../store/slices/messagesSlice.js';
+import routes from '../api/routes.js';
 import getAuthToken from '../utils/getAuthToken.js';
 
 const Messages = ({ notify }) => {
   const { t } = useTranslation();
   const senderName = t('User');
   const dispatch = useDispatch();
-  const { currentChatId } = useSelector((state) => state.chatsReducer);
-  const chatName = useSelector((state) => state.chatsReducer.currentChats
-    .reduce((acc, chat) => {
-      acc = chat.id === currentChatId ? chat.name : acc;
-      return acc;
-    }, ''));
+  const { currentChatId, currentChats } = useSelector((state) => state.chatsReducer);
+  const currentChat = currentChats.find((chat) => chat.id === currentChatId);
+  const chatName = currentChat ? currentChat.name : '';
   const { idInstance, apiTokenInstance } = getAuthToken();
 
-  const messages = useSelector((state) => state.messagesReducer.messages
+  const currentMessages = useSelector((state) => state.messagesReducer.messages
     .filter((message) => message.chatId === currentChatId));
 
   const inputEl = useRef();
   const formEl = useRef();
 
   useEffect(() => {
-    if (currentChatId !== '') {
+    if (currentChatId) {
       inputEl.current.focus();
     }
   }, [currentChatId]);
@@ -83,7 +80,7 @@ const Messages = ({ notify }) => {
               )}
           </p>
           <span className="text-muted">
-            {t('messages.counter', { count: messages.length })}
+            {t('messages.counter', { count: currentMessages.length })}
           </span>
         </div>
         <div id="messages-box" className="chat-messages overflow-auto px-3">
@@ -93,7 +90,7 @@ const Messages = ({ notify }) => {
                     {t('ChooseChat')}
                   </p>
                 )}
-          {messages.map((message) => <Message key={message.idMessage} message={message} />)}
+          {currentMessages.map((message) => <Message key={message.idMessage} message={message} />)}
         </div>
         <div className="mt-auto px-3 py-3">
           {currentChatId !== '' && (

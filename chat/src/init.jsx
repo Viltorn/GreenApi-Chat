@@ -3,8 +3,8 @@ import { I18nextProvider, initReactI18next } from 'react-i18next';
 import React from 'react';
 import { ToastContainer, toast } from 'react-toastify';
 import { Provider as StoreProvider } from 'react-redux';
-import store from './slices/index.js';
-import App from './components/App.jsx';
+import store from './store/index.js';
+import App from './App.jsx';
 import resources from './locales/index.js';
 import { AuthProvider } from './contexts/authContext.js';
 

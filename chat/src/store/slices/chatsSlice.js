@@ -1,12 +1,13 @@
 /* eslint-disable no-param-reassign */
 import { createSlice } from '@reduxjs/toolkit';
 import _ from 'lodash';
+import fetchCurrentChats from '../middlewares.js';
 import { actions as messagesActions } from './messagesSlice.js';
 
 const initialState = {
   currentChats: [],
   archiveChats: [],
-  currentChatId: '',
+  currentChatId: null,
 };
 
 const chatsSlice = createSlice({
@@ -14,50 +15,28 @@ const chatsSlice = createSlice({
   initialState,
   reducers: {
     addChats(state, { payload }) {
-      const newChats = payload.map((chat) => {
-        if (chat.name === '') {
-          chat.name = _.uniqueId('User_');
-        }
-        return chat;
-      });
+      const newChats = payload;
       state.currentChats = [...newChats];
     },
     addChat(state, { payload }) {
       const newChat = payload;
-      if (newChat.name === '') {
-        newChat.name = _.uniqueId('User_');
-      }
       state.currentChats = [...state.currentChats, newChat];
     },
     addAvatar(state, { payload }) {
       const { id, avatarUrl } = payload;
-      const newChats = state.currentChats.map((chat) => {
-        if (chat.id === id) {
-          chat.avatar = avatarUrl;
-        }
-        return chat;
-      });
-      state.currentChats = [...newChats];
+      const chatIndex = state.currentChats.findIndex((chat) => chat.id === id);
+      state.currentChats[chatIndex].avatar = avatarUrl;
     },
     changeName(state, { payload }) {
       const { id, chatName } = payload;
-      const newChats = state.currentChats.map((chat) => {
-        if (chat.id === id) {
-          chat.name = chatName;
-        }
-        return chat;
-      });
-      state.currentChats = [...newChats];
+      const chatIndex = state.currentChats.findIndex((chat) => chat.id === id);
+      state.currentChats[chatIndex].name = chatName;
     },
     changeCurrentChat(state, { payload }) {
       const id = payload;
       state.currentChatId = id;
-      state.currentChats = state.currentChats.map((chat) => {
-        if (chat.id === id) {
-          chat.read = 'yes';
-        }
-        return chat;
-      });
+      const chatIndex = state.currentChats.findIndex((chat) => chat.id === id);
+      state.currentChats[chatIndex].read = true;
     },
   },
   extraReducers: (builder) => {
@@ -65,20 +44,22 @@ const chatsSlice = createSlice({
       .addCase(messagesActions.addMessage, (state, { payload }) => {
         const { chatId, senderName } = payload;
         const name = senderName !== '' ? senderName : _.uniqueId('User_');
-        const oldChat = state.currentChats.find((chat) => chat.id === chatId);
-        if (!oldChat) {
-          state.currentChats = [{
-            id: chatId,
-            name,
-            type: 'user',
-            read: 'not',
-          }, ...state.currentChats];
+        const existingChat = state.currentChats.find((chat) => chat.id === chatId);
+        if (!existingChat) {
+          state.currentChats.unshift({
+            id: chatId, name, type: 'user', read: false,
+          });
         }
-        if (oldChat && state.currentChatId !== chatId) {
+        if (existingChat && state.currentChatId !== chatId) {
           const restChats = state.currentChats.filter((chat) => chat.id !== chatId);
-          oldChat.read = 'not';
-          state.currentChats = [oldChat, ...restChats];
+          existingChat.read = false;
+          state.currentChats = [existingChat, ...restChats];
         }
+      })
+      .addCase(fetchCurrentChats.fulfilled, (state, { payload }) => {
+        const chats = payload;
+        state.currentChats = [...chats];
+        console.log('chats loaded...');
       });
   },
 });

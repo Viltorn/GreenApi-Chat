@@ -23,7 +23,7 @@ const Header = () => {
     <nav className="shadow-sm navbar navbar-expand-lg navbar-light bg-white">
       <div className="container">
         <a className="navbar-brand" href="/">
-          Bloom Chat
+          GreenApi Chat
         </a>
         <div className="btn-group col-auto" role="group" aria-label="outlined">
           {Object.keys(lngs).map((lng) => (

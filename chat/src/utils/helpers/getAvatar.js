@@ -1,5 +1,5 @@
 import axios from 'axios';
-import routes from '../routes.js';
+import routes from '../../api/routes.js';
 
 const getAvatar = async (id, idinstance, api) => {
   const avatarRes = await axios

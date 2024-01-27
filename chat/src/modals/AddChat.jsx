@@ -11,10 +11,11 @@ import {
   FormLabel,
 } from 'react-bootstrap';
 import axios from 'axios';
-import { actions as modalActions } from '../slices/modalsSlice';
-import { actions as chatsActions } from '../slices/chatsSlice.js';
+import { actions as modalActions } from '../store/slices/modalsSlice.js';
+import { actions as chatsActions } from '../store/slices/chatsSlice.js';
 import { chatsSchema } from '../utils/validation.js';
-import routes from '../routes';
+import fixChatNames from '../utils/helpers/fixChatNames.js';
+import routes from '../api/routes.js';
 import getAuthToken from '../utils/getAuthToken.js';
 
 const AddChat = ({ notify }) => {
@@ -33,6 +34,19 @@ const AddChat = ({ notify }) => {
     dispatch(modalActions.closeModal());
   };
 
+  const addNewChat = (contactInfo) => {
+    const { data } = contactInfo;
+    const { avatar, name, chatId } = data;
+    const chatData = {
+      avatar, name, id: chatId, type: 'user',
+    };
+    const fixedChat = fixChatNames([chatData]);
+    dispatch(chatsActions.addChat(...fixedChat));
+    dispatch(chatsActions.changeCurrentChat(chatId));
+    notify('add');
+    handleClose();
+  };
+
   const formik = useFormik({
     initialValues: {
       phone: '',
@@ -43,20 +57,10 @@ const AddChat = ({ notify }) => {
         const whatsAppCheck = await axios
           .post(routes
             .checkWhatsAppPath(idInstance, apiTokenInstance), { phoneNumber: Number(phone) });
-        console.log(whatsAppCheck.data);
         if (whatsAppCheck.data.existsWhatsapp) {
           const contactInfo = await axios
             .post(routes.getContactInfo(idInstance, apiTokenInstance), { chatId: `${phone}@c.us` });
-          if (contactInfo.status === 200) {
-            const { data } = contactInfo;
-            const { avatar, name, chatId } = data;
-            dispatch(chatsActions.addChat({
-              avatar, name, id: chatId, type: 'user',
-            }));
-            dispatch(chatsActions.changeCurrentChat(chatId));
-            notify('add');
-            handleClose();
-          }
+          addNewChat(contactInfo);
         } else {
           formik.setSubmitting(false);
           notify('wrongPhone');

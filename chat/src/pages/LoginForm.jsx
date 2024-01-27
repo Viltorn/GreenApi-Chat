@@ -10,7 +10,7 @@ import 'bootstrap';
 import axios from 'axios';
 import { Button, Form } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
-import routes from '../routes.js';
+import routes from '../api/routes.js';
 import logo from '../assets/ChatLogo.png';
 import authContext from '../contexts/authContext.js';
 
