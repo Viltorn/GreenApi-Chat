@@ -9,7 +9,7 @@ import authContext from '../contexts/authContext.js';
 import CustomSpinner from './CustomSpinner.jsx';
 import MainWindow from '../pages/MainWindow.jsx';
 
-const Loader = (notify) => {
+const Loader = ({ notify }) => {
   const navigate = useNavigate();
   const loaderStatus = useSelector((state) => state.loaderReducer.status);
   const { logOut } = useContext(authContext);

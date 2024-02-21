@@ -84,7 +84,7 @@ const Messages = ({ notify }) => {
           </span>
         </div>
         <div id="messages-box" className="chat-messages overflow-auto px-3">
-          {currentChatId === ''
+          {!currentChatId
                 && (
                   <p>
                     {t('ChooseChat')}
@@ -93,7 +93,7 @@ const Messages = ({ notify }) => {
           {currentMessages.map((message) => <Message key={message.idMessage} message={message} />)}
         </div>
         <div className="mt-auto px-3 py-3">
-          {currentChatId !== '' && (
+          {currentChatId && (
           <Form ref={formEl} onSubmit={formik.handleSubmit} className="py-1 border rounded-2">
             <Form.Group className="input-group has-validation">
               <Form.Control
