@@ -86,17 +86,19 @@ const AddChat = ({ notify }) => {
             <FormGroup>
               <FormControl
                 id="phone"
-                type="text"
+                type="tel"
                 ref={inputEl}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
                 value={formik.values.phone}
                 data-testid="input-body"
-                name="phone"
                 isInvalid={formik.errors.phone}
+                required
+                autoComplete="tel"
+                name="phone"
                 className="mb-2"
               />
-              {formik.errors.phone ? (
+              {formik.errors.phone && formik.touched.phone ? (
                 <div className="invalid-feedback">{t(`errors.${formik.errors.phone}`)}</div>
               ) : null}
               <FormLabel htmlFor="phone" className="visually-hidden">{t('ChatNumber')}</FormLabel>

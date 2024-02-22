@@ -61,6 +61,7 @@ const RenameChannel = ({ notify }) => {
                 value={formik.values.chatName}
                 data-testid="input-body"
                 isInvalid={formik.errors.chatName}
+                required
                 name="chatName"
                 className="mb-2"
               />
